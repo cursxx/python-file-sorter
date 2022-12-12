@@ -1,8 +1,8 @@
 from actions import *
 
 def main():
-    fileActions = FileActions()
-    fileActions.mainloop()
+    actions = FileActions()
+    actions.mainloop()
 
 if __name__ == "__main__":
     main()

@@ -4,31 +4,27 @@ import shutil
 from os import path
 import os
 import re
+import numpy as np
 
-extension = ['pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png', 'rar', 'zip', '7z', 'exe', 'txt', 'xlsx', 'xls']
-current_path = os.getcwd()
+
 
 class FileActions():
     
     # Заглавная стартующая функция
-    def __init__():
-        getCurrentState()
-        fileControl()
-    
-    # Основной цикл сортировки файлов
-    def fileControl():
-        if os.path.exists(current_path):
-            if os.path.exists(current_path):
-                askExists()
-                moveFile()
+    def __init__(self):
+        self.getCurrentState()
+        if os.path.exists(self.current_path):
+            if os.path.exists(self.current_path):
+                self.askExists()
+                self.moveFile()
                 print("% s перемещен в указанное место,% s" % (source_path , new_location))
-            elif os.path.isfile(current_path):
-                askExists()
-                moveFile()
+            elif os.path.isfile(self.current_path):
+                self.askExists()
+                self.moveFile()
                 print("% s перемещен в указанное место,% s" % (source_path , new_location))
-            elif os.path.isdir(current_path):
-                askExists()
-                moveFile()
+            elif os.path.isdir(self.current_path):
+                self.askExists()
+                self.moveFile()
                 print("% s перемещен в указанное место,% s" % (source_path , new_location))
         else:
             # Распечатать сообщение, если файл не существует
@@ -38,26 +34,30 @@ class FileActions():
 # Вспомогательные функции
 
     # Отображаем текущую директорию и содержимое
-    def getCurrentState():
-        for dirs, folders, files in os.walk(current_path):
+    def getCurrentState(self):
+        self.current_path = os.getcwd()
+        for dirs, folders, files in os.walk(self.current_path):
             print('Текущий каталог:', dirs)
-            print('Вложенные папки:', folder)
+            print('Вложенные папки:', folders)
             print('Файлы в папке:', files)
             print('\n')
             # Отобразит только файлы и папки в текущей директории
             break
     
     # Функция перемещения файлов 
-    def moveFile():
+    def moveFile(self):
         new_location = shutil.move(source_path, destination_path)
     
     # Проверка существования файлов с определенными расширениями и объявление переменных
-    def askExists():
-        for fileNumber in extension.split:
-            if os.path.exists('^.{3,20}$\.' + extension.split[fileNumber]):
-                # Задайте имя файла с путем
-                source_path = "/home/ubuntu/to_sort/^.{3,20}$\." + extension[fileNumber]
-                # Задайте путь к каталогу, в который будет перемещен файл
-                destination_path = "/home/ubuntu/sorted/" + extension[fileNumber]
+    def askExists(self):
+        self.extension = ['pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png', 'rar', 'zip', '7z', 'exe', 'txt', 'xlsx', 'xls']
+        extension_alone = np.array_split(self.extension, 13)
+        for fileNumber in self.extension:
+            if os.path.exists('^.{3,20}$\.', self.extension[fileNumber]):
                 if not os.path.exists(destination_path):
                     os.makedirs(destination_path)
+                self.current_path = os.getcwd()
+                # Задайте имя файла с путем
+                self.source_path = "/home/markus/devops/personal/file-sorter/src/to_sort/^.{3,20}$\." + extension
+                # Задайте путь к каталогу, в который будет перемещен файл
+                self.destination_path = "/home/markus/devops/personal/file-sorter/src/sorted/" + extension
