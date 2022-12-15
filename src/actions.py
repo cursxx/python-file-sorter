@@ -9,52 +9,55 @@ import numpy as np
 
 
 class FileActions():
+
+    global source_path
+    global destination_path
+    global new_location
     
-    # Заглавная стартующая функция
+    # задайте имя файла с путем
+    source_path = "/home/markus/devops/personal/file-sorter/src/to_sort/1245.pdf"
+    # задайте путь к каталогу, в который будет перемещен файл
+    destination_path = "/home/markus/devops/personal/file-sorter/src/sorted/"
+    
+    # заглавная стартующая функция
     def __init__(self):
         self.getCurrentState()
-        if os.path.exists(self.current_path):
-            if os.path.exists(self.current_path):
-                self.askExists()
-                # self.moveFile()
-                print("% s перемещен в указанное место,% s" % (source_path , new_location))
-            elif os.path.isfile(self.current_path):
-                self.askExists()
-                # self.moveFile()
-                print("% s перемещен в указанное место,% s" % (source_path , new_location))
-            elif os.path.isdir(self.current_path):
-                self.askExists()
-                # self.moveFile()
-                print("% s перемещен в указанное место,% s" % (source_path , new_location))
+        current_path = os.getcwd()
+        if os.path.exists(current_path):
+            self.askExists()
+            print("% s перемещен в указанное место,% s" % (source_path , destination_path))
+            
+        elif os.path.isfile(current_path):
+            self.askExists()
+            print("% s перемещен в указанное место,% s" % (source_path , destination_path))
+            
+        elif os.path.isdir(current_path):
+            self.askExists()
+            print("% s перемещен в указанное место,% s" % (source_path , destination_path))
         else:
-            # Распечатать сообщение, если файл не существует
+            # распечатать сообщение, если файл не существует
             print ("Файлов pdf не существует.")
             print ("Ухожу в ожидание...")
-        
-# Вспомогательные функции
 
-    # Отображаем текущую директорию и содержимое
+    # отображаем текущую директорию и содержимое
     def getCurrentState(self):
-        self.current_path = os.getcwd()
-        for dirs, folders, files in os.walk(self.current_path):
+        current_path = os.getcwd()
+        for dirs, folders, files in os.walk(current_path):
             print('Текущий каталог:', dirs)
             print('Вложенные папки:', folders)
             print('Файлы в папке:', files)
             print('\n')
-            # Отобразит только файлы и папки в текущей директории
+            # отобразит только файлы и папки в текущей директории
             break
-    
-    # Проверка существования файлов с определенными расширениями и объявление переменных
-    def askExists(self):
-        # self.extension = ['pdf', 'doc', 'docx', 'jpg', 'jpeg', 'png', 'rar', 'zip', '7z', 'exe', 'txt', 'xlsx', 'xls']
-        # extension_alone = np.array_split(self.extension, 13)
         
-        if os.path.exists('^.{3,20}$\.pdf'):
+    # проверка существования файлов с определенными расширениями и объявление переменных
+    def askExists(self):
+        # если файл существует, то перемещаем его в целевую директорию
+        if os.path.exists(source_path):
+            # если целевая директория не существует, то создаем ее
             if not os.path.exists(destination_path):
                 os.makedirs(destination_path)
             current_path = os.getcwd()
-            # Задайте имя файла с путем
-            source_path = "/home/markus/devops/personal/file-sorter/src/to_sort/^.{3,20}$\.pdf"
-            # Задайте путь к каталогу, в который будет перемещен файл
-            destination_path = "/home/markus/devops/personal/file-sorter/src/sorted/"
-            new_location = shutil.move(source_path, destination_path)
+            shutil.move(source_path, destination_path)
+            if 
+            
