@@ -1,67 +1,82 @@
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 import shutil
-from os import path
+import time
 import os
-import re
-import numpy as np
-import glob
 
+# объявляем глобальные переменные
+global source_path
+global destination_path
+global new_location
+global current_path
 
-class FileActions():
+current_path = os.getcwd()
+# задайте имя файла с путем
+source_path = current_path + "/to_sort/"
+# задайте путь к каталогу, в который будет перемещен файл
+destination_path = current_path + "/sorted/"    # эта директория не существует
 
-    global source_path
-    global destination_path
-    global new_location
-    global current_path
-    
-    current_path = os.getcwd()
-    # задайте имя файла с путем
-    source_path = "/home/markus/devops/personal/file-sorter/src/to_sort/"
-    # задайте путь к каталогу, в который будет перемещен файл
-    destination_path = "/home/markus/devops/personal/file-sorter/src/sorted/pdf/"    # эта директория не существует
-    
-    # заглавная стартующая функция
+extensions = ["pdf", "html", "htm", "jpg", "png", "docx", "svg", "avi", "xlsx", "xls", "txt"]
+
+class Watcher:
+    # Set the directory on watch
+    watchDirectory = os.getcwd()
+
     def __init__(self):
-        self.getCurrentState()
+        self.observer = Observer()
         
-        if os.path.exists(current_path):
-            self.askExists()
-            print("файлы из директории % s скопированы в % s" % (source_path , destination_path))
-            
-        elif os.path.isfile(current_path):
-            self.askExists()
-            print("файлы из директории % s скопированы в % s" % (source_path , destination_path))
-            
-        # elif os.path.isdir(current_path):
-        #     self.askExists()
-        #     print("файлы из директории % s скопированы в % s" % (source_path , destination_path))
-        else:
-            # распечатать сообщение, если файл не существует
-            print ("Файлов pdf не существует.")
-            print ("Ухожу в ожидание...")
+    def run(self):
+        event_handler = Handler()
+        self.observer.schedule(event_handler, self.watchDirectory, recursive = True)
+        self.observer.start()
+        try:
+            while True:
+                time.sleep(5)
+        except:
+            self.observer.stop()
+            print("Observer Stopped")
 
-    # отображаем текущую директорию и содержимое
-    def getCurrentState(self):
-        for dirs, folders, files in os.walk(current_path):
-            print('Текущий каталог:', dirs)
-            print('Вложенные папки:', folders)
-            print('Файлы в папке:', files)
-            print('\n')
-            # отобразит только файлы и папки в текущей директории
-            break
-        
-    # проверка существования файлов с определенными расширениями и объявление переменных
-    def askExists(self):
-        # если файл существует, то перемещаем его в целевую директорию
-        if os.path.exists(source_path):
-            # если целевая директория не существует, то создаем ее
-            if not os.path.exists(destination_path):
-                os.makedirs(destination_path)
+        self.observer.join()
 
-            # для root, директорий и файлов в текущей директории
-            for root, dirs, files in os.walk(current_path): 
-                for file in files: 
-                    # если файл имеет в названии .pdf, то перемещаем его в целевую директорию
-                    if file.endswith(".pdf"):
-                        shutil.copyfile(source_path + file, destination_path + file)
+
+class Handler(FileSystemEventHandler):
+
+    @staticmethod
+    def on_any_event(event):
+        if event.is_directory:
+            return None
+
+        elif event.event_type == 'created':
+            # Event is created, you can process it now
+            print("Watchdog received created event - % s." % event.src_path)
+            fileMover()
+                        
+        elif event.event_type == 'modified':
+            # Event is modified, you can process it now
+            print("Watchdog received modified event - % s." % event.src_path)
+            fileMover()
+                        
+        elif event.event_type == 'on_deleted':
+            print(f"what the f**k! Someone deleted {event.src_path}!")
+            fileMover()
+
+        elif event.event_type == 'on_moved':
+            print(f"ok ok ok, someone moved {event.src_path} to {event.dest_path}")
+            fileMover()
+            
+def fileMover():
+    # для root, директорий и файлов в текущей директории
+    for root, dirs, files in os.walk(source_path): 
+        for file in files: 
+            for extensionType in extensions:
+                # если файл имеет в названии .pdf, то перемещаем его в целевую директорию
+                if file.endswith("." + extensionType):
+                    if not os.path.exists(destination_path + extensionType):
+                        os.makedirs(destination_path + extensionType)
+                    # перемещаем файл в директорию, назначенную файлам с определенным расширением
+                    shutil.move(source_path + file, destination_path + extensionType)
+
+
+if __name__ == '__main__':
+    watch = Watcher()
+    watch.run()
