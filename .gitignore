@@ -6,4 +6,4 @@ pyvenv.cfg
 sorted
 to_sort
 __pycache__
-.DS_Store__
+.DS_Store
